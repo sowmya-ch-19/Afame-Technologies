@@ -1,0 +1,134 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
+
+titanic_data = pd.read_csv('Titanic-Dataset.csv')
+
+# Display the first few rows of the dataset
+print(titanic_data.head())
+
+# Check for missing values
+print(titanic_data.isnull().sum())
+
+# Basic statistics of the dataset
+print(titanic_data.describe())
+
+# Visualizing the survival count
+sns.countplot(x='Survived', data=titanic_data)
+plt.show()
+
+# Comparing survival rate across different features
+features = ['Age', 'Sex', 'Ticket', 'Fare', 'Cabin','Survived']
+for feature in features:
+    sns.countplot(x=feature, hue='Survived', data=titanic_data)
+    plt.show()
+
+# Filling missing values
+imputer = SimpleImputer(strategy='mean')
+titanic_data['Age'] = imputer.fit_transform(titanic_data[['Age']])
+
+# Dropping columns that may not be useful
+titanic_data = titanic_data.drop(['Cabin', 'Ticket', 'Name', 'Embarked'], axis=1)
+
+# Converting categorical data to numerical
+le = LabelEncoder()
+titanic_data['Sex'] = le.fit_transform(titanic_data['Sex'])
+
+# Splitting the dataset
+X = titanic_data.drop('Survived', axis=1)
+y = titanic_data['Survived']
+
+# Splitting the data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Feature Scaling
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+# Accuracy
+print("Accuracy:", accuracy_score(y_test, y_pred))
+
+# Confusion Matrix
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+
+# Classification Report
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
+
+sample_data = X_test[0].reshape(1, -1)
+predicted = model.predict(sample_data)
+print(f"Predicted: {'Survived' if predicted[0] == 1 else 'Did Not Survive'}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
