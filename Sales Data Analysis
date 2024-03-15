@@ -1,0 +1,100 @@
+# Import libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+
+# Load your data
+file_path = 'US Sales.csv'
+df = pd.read_csv(file_path)
+print(df.head())
+print(df.info())
+
+
+# Data cleaning
+df.dropna(inplace=True)  # Or df.fillna(value=0, inplace=True)
+
+print(df.columns)
+
+
+# To calculate total sales
+if 'Quantity Ordered' in df.columns and 'Price Each' in df.columns:
+    df['sales'] = df['Quantity Ordered'] * df['Price Each']
+    total_sales = df['sales'].sum()
+    print(f"Total Sales: {total_sales}")
+else:
+    print("Calculation not performed due to missing columns.")
+
+
+
+# Calculate the total sale for each transaction
+df['sales'] = df['Quantity Ordered'] * df['Price Each']
+
+
+# To calculate monthly sales
+
+# Group data by 'month' and sum up the sales for each month
+monthly_sales = df.groupby('Month')['sales'].sum().reset_index()
+
+print(monthly_sales)
+
+plt.figure(figsize=(10, 6))
+monthly_sales.plot(kind='bar')
+plt.title('Monthly Sales Trends')
+plt.xlabel('Month')
+plt.ylabel('Total Sales')
+plt.xticks(rotation=45)
+plt.show()
+
+
+
+# Replace 'Product' and 'Quantity Ordered' with your actual column names if they're different.
+product_sales = df.groupby('Product')['Quantity Ordered'].sum().sort_values(ascending=False)
+print(product_sales)
+
+product_sales.plot(kind='bar')
+plt.title('Best Selling Products')
+plt.xlabel('Product')
+plt.ylabel('Quantity Ordered')
+plt.xticks(rotation=90)  # Rotate product names for better readability
+plt.show()
+
+
+# Assuming 'Price Each' is your column for the price of each item
+df['Total Sales'] = df['Quantity Ordered'] * df['Price Each']
+product_revenue = df.groupby('Product')['Total Sales'].sum().sort_values(ascending=False)
+
+fig, ax1 = plt.subplots()
+
+# Plotting quantity sold
+ax2 = ax1.twinx()
+ax1.bar(product_sales.index, product_sales, color='g')
+ax2.plot(product_sales.index, product_revenue, color='b')
+
+ax1.set_xlabel('Product')
+ax1.set_ylabel('Quantity Ordered', color='g')
+ax2.set_ylabel('Total Sales ($)', color='b')
+# Assuming ax1 is your AxesSubplot object
+# First, set the ticks positions
+ax1.set_xticks(range(len(product_sales.index)))
+
+# Then, set the tick labels as before
+ax1.set_xticklabels(product_sales.index, rotation='vertical')
+
+ax1.set_xticklabels(product_sales.index, rotation='vertical')
+
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
